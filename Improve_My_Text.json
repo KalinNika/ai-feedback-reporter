@@ -1,0 +1,368 @@
+{
+  "name": "Improve My Text",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enhance-text",
+        "options": {}
+      },
+      "id": "a8876517-ef36-426b-9ad9-87e2e5460ca9",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        80
+      ],
+      "webhookId": "e56afde5-3c7e-4c7c-b845-32b75b8259f6"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5db400ce-67e7-4077-ab1f-a64ee693b233",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        80
+      ],
+      "id": "ec841f74-48ed-4f2a-b9ae-cabe1837aab8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -220,
+        320
+      ],
+      "id": "0b51247e-f3e2-445e-80e5-778ce4ce4935",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "WBs18lBKNiuoyJ7D",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "143844df-cb0f-4702-8e5e-5e4f923ca6dc",
+              "name": "chatInput",
+              "value": "=Проанализируй следующий отзыв клиента: \"{{ $json.body.text }}\". \nВерни результат строго в JSON-формате: \n{\n  \"tone\": \"...\",\n  \"summary\": \"...\",\n  \"recommendations\": [\"...\"]\n}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -420,
+        80
+      ],
+      "id": "17564dee-88a9-48e8-9285-67b2420ab085",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1kqCDulzUMADthEwlsiCBiT5vk4ef7ACP0vvvFFtYI6Q",
+          "mode": "list",
+          "cachedResultName": "AI Feedback Report",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kqCDulzUMADthEwlsiCBiT5vk4ef7ACP0vvvFFtYI6Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kqCDulzUMADthEwlsiCBiT5vk4ef7ACP0vvvFFtYI6Q/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tone": "={{$json.tone}}",
+            "Summary": "={{$json.summary}}",
+            "Recommendations": "={{$json.recommendations}}",
+            "Timestamp": "={{$now}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Tone",
+              "displayName": "Tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recommendations",
+              "displayName": "Recommendations",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        660,
+        80
+      ],
+      "id": "4d32aa54-c556-45cd-a89b-bd1836a581cf",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "M6vhJ9WMVMxP3yS4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        80
+      ],
+      "id": "13fd5bd5-273c-49bb-b0bb-63f528000b3c",
+      "name": "Wait",
+      "webhookId": "0129235d-1362-4537-8885-c66b73cfe3d9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c3ce8a9f-5432-430c-b5a3-8b44c3b6130a",
+              "name": "tone",
+              "value": "={{ JSON.parse($json.output).tone }}",
+              "type": "string"
+            },
+            {
+              "id": "e46eb2a0-a7f0-4a4b-a758-7afbb1de1730",
+              "name": "summary",
+              "value": "={{ JSON.parse($json.output).summary }}",
+              "type": "string"
+            },
+            {
+              "id": "05a60be7-0a79-431a-8cb9-f246a00f77e4",
+              "name": "recommendations",
+              "value": "={{ JSON.parse($json.output).recommendations.join(\", \") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        80
+      ],
+      "id": "e263bc8b-8157-4893-9b2e-6741f772a059",
+      "name": "Parse AI Output"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "hayleyrizhik.app.n8n.cloud",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 YaBrowser/25.6.0.0 Safari/537.36",
+            "content-length": "36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, br",
+            "accept-language": "ru,en;q=0.9",
+            "cache-control": "max-age=0",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "77.105.137.229",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "NL",
+            "cf-ray": "9587fb5881400a75-AMS",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/x-www-form-urlencoded",
+            "origin": "null",
+            "priority": "u=0, i",
+            "sec-ch-ua": "\"Chromium\";v=\"136\", \"YaBrowser\";v=\"25.6\", \"Not.A/Brand\";v=\"99\", \"Yowser\";v=\"2.5\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "x-forwarded-for": "77.105.137.229, 172.71.182.161",
+            "x-forwarded-host": "hayleyrizhik.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-41-785c66d969-kzbqg",
+            "x-is-trusted": "yes",
+            "x-real-ip": "77.105.137.229"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "text": "Все ок"
+          },
+          "webhookUrl": "https://hayleyrizhik.app.n8n.cloud/webhook/enhance-text",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Output": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e65123f7-8c11-420b-aaff-580c5689202d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "236575c1dfbaae2a5c2d71a1cb5d4b17b60930b5b0315cabf71a8607c5d955bc"
+  },
+  "id": "8nmkxQWhNinUREL3",
+  "tags": []
+}
